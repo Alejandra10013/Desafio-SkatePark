@@ -23,27 +23,32 @@ app.use(expressFileupload({
     responseOnLimit: "El peso del archivo supera el limite permitido."
 }))
 
+const hbs = create({
+    defaultLayout: "main",
+    layoutsDir: __dirname + "/views/layout"
+})
+
+app.engine("handlebars", hbs.engine)
 app.set("view engine", "handlebars")
-app.engine(
-    ""
-)
+app.set("views", "./views")
+
 
 app.get("/", (req, res) => {
     res.render("home")
 })
 
 app.get("/registro", (req, res) => {
-    res.render("Registro")
+    res.render("registro")
 })
 
 app.get("/login", (req, res) => {
-    res.render("Login")
+    res.render("login")
 })
 
 app.get("/admin", async (req, res) => {
     try {
         const usuarios = await consultarUsuarios()
-        res.render("Admin", { usuarios })
+        res.render("admin", { usuarios })
     } catch (err) {
         res.status(500).send({
             error: `Algo salio mal... ${err}`,
@@ -107,7 +112,7 @@ app.put("/usuarios", async (req, res) => {
     }
 })
 
-app.post("/verify", async (req, res) => {
+app.post("/verifica", async (req, res) => {
     const { email, password } = req.body
     const user = await getUsuario(email, password)
 
@@ -126,7 +131,7 @@ app.post("/verify", async (req, res) => {
                 res.send(token)
             } else {
                 res.status(401).send({
-                    error: "No ha sido posible registrar el usuario. Verifique los datos.",
+                    error: "No ha sido posible registrar el usuario. Verifique el estado de la cuenta.",
                     code: 401
                 })
             }
@@ -139,23 +144,34 @@ app.post("/verify", async (req, res) => {
     }
 })
 
+// const verificarToken = (req, res, next) => {
+//     let { token } = req.query
+//     jwt.verify(toke, secretKey, (error, data) => {
+//         if (error) {
+//             res.status(401).send("Usuario no autorizado. Ruta denegada.")
+//         } else {
+//             next()
+//         }
+//     })
+// }
+
 app.get("/datos", (req, res) => {
-    const { token } = req.query
+    const { token } = req.query;
     jwt.verify(token, secretKey, (err, decoded) => {
         const { data } = decoded
-        const email = data[0].email
-        const nombre = data[0].nombre
-        const password = data[0].password
-        const aniosExp = data[0].aniosExp
-        const especialidad = data[0].especialidad
-
+        /* const { nombre,email } = data */
+        const email = data[0].email;
+        const nombre = data[0].nombre;
+        const password = data[0].password;
+        const anios = data[0].anios;
+        const especialidad = data[0].especialidad;
         err
             ? res.status(401).send({
-                error: "401 Unauthorized",
-                message: "No autorizado",
-                token_error: err.message
+                error: '401 Unauthorized',
+                message: 'Usted no está autorizado para estar aquí',
+                token_error: err.message,
             })
-            : res.render("datos", { email, nombre, password, aniosExp, especialidad })
+            : res.render("datos", { email, nombre, password, anios, especialidad })
     })
 })
 

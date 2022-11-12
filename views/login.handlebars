@@ -30,7 +30,7 @@
         const password = document.getElementById('password').value
         const payload = { email, password }
         try {
-            const { data: token } = await axios.post('/verify', payload)
+            const { data: token } = await axios.post('/verifica', payload)
             alert(`Autenticación exitosa!`)
             window.location.href = `/datos?token=${token}`
         } catch ({ response }) {

@@ -50,8 +50,7 @@ async function setUsuarioStatus(id, estado) {
 
 async function setDatosUsuario(email, nombre, password, anios, especialidad) {
     const result = await pool.query(`
-        update skaters set nombre = '${nombre}', password = '${password}', anios_experiencia = '${anios}', especialidad = '${especialidad}'
-        where email = '${email}' returning *
+        update skaters set nombre = '${nombre}', password = '${password}', anios_experiencia = '${anios}', especialidad = '${especialidad}' where email = '${email}' returning *
     `)
     const usuario = result.rows[0]
     return usuario
@@ -64,4 +63,4 @@ async function eliminarCuenta(email) {
     return result.rowCount
 }
 
-module.exports = { consultarUsuarios, nuevoUsuario, getUsuario, setDatosUsuario, setUsuarioStatus, eliminarCuenta}
+module.exports = { consultarUsuarios, nuevoUsuario, getUsuario, setDatosUsuario, setUsuarioStatus, eliminarCuenta }
